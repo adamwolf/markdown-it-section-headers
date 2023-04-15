@@ -1,0 +1,42 @@
+
+# Make sure to enable "Allow GitHub Actions to create and approve pull requests" in the repository settings
+# Use a PAT if you want GitHub Actions to run on the created PR, see https://github.com/peter-evans/create-pull-request/issues/48
+
+name: 'Make PRs to bump prepatch version'
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+jobs:
+  make_prs:
+    name: 'Bump version'
+    if: github.event.pull_request.merged == true && (!contains(github.event.pull_request.labels.*.name, 'nobump') && !contains(github.event.pull_request.labels.*.name, 'release'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          cache: 'npm'
+      - name: git config
+        run: |
+          git config --global user.email "actions@users.noreply.github.com"
+          git config --global user.name "Automated GitHub Actions Bot"
+      - name: Bump version and commit
+        run: npm version prerelease -m "Bump version to %s"
+      - name: Store new version
+        run: echo "NEWVERSION=$(cat package.json | jq -r '.version')" >> $GITHUB_ENV
+      - run: git log
+      - name: Create new branch
+        run: git checkout -b "$NEWVERSION"
+      - name: Push branch
+        run: git push origin "$NEWVERSION"
+      - name: Make PR
+        run: gh pr create --title "Bump version to $NEWVERSION" --body 'Autocreated by GitHub Actions' --label 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
