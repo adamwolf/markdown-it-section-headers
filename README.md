@@ -1,6 +1,6 @@
 # Markdown-It Section Headers
 
-<!-- [![ci-badge]][ci-link] -->
+ ![test workflow badge](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)
 <!-- [![npm-badge]][npm-link] -->
 
 A [markdown-it] plugin to add <sections> around headers
@@ -9,7 +9,7 @@ Turn
 ```markdown
 # Career
 lorem ipsum dolor sit amet
-    
+
 ## 2005-2009: Career beginnings
 alpha beta gamma delta epsilon
 
@@ -37,7 +37,7 @@ into
 
 I wanted to generate some HTML with `section` tags using [markdown-it] that would be mostly compatible with [Tufte CSS]. This unofficial plugin was one of the steps.
 
-This plugin doesn't help you plaace sections arbitrarily--it assumes every header is at the beginning of a section, and that sections for an `h3`, for instance, go inside the section for the `h2` above it. (You *can* specify which header levels get sections.)
+This plugin doesn't help you place sections arbitrarily--it assumes every header is at the beginning of a section, and that sections for an `h3`, for instance, go inside the section for the `h2` above it. (You *can* specify which header levels get sections.)
 
 This project is not "production-quality" and does not make any guarantees.
 
@@ -106,20 +106,19 @@ If you have a question or suggestion, please open an issue.
 ### Getting Started
 
 1. Check out this repository.
-2. Install the `node_module` dependencies: `npm install` or `npm ci` (see [Install a project with a clean slate](https://docs.npmjs.com/cli/v7/commands/npm-ci)).
+2. Install the dependencies: `npm install` or `npm ci` (see [Install a project with a clean slate](https://docs.npmjs.com/cli/v7/commands/npm-ci)).
 3. Run code formatting: `npm run format` and linting: `npm run lint:fix`.
 4. Run the unit tests: `npm test`, or with coverage; `npm test -- --coverage`.
 
 Now that you know things are good in your environment, make changes to the code, write some tests, and run the tests again.
 
-At the time, it didn't seem like Markdown-it had great documentation on how to write plugins. I found other plugins and the source to be helpful. I would love to have better documentation to point folks at, and to review what has been done here.
+At the time, it didn't seem like markdown-it had great documentation on how to write plugins. I found other plugins and the source to be helpful. I would love to have better documentation to point folks at, and to review what has been done here.
 
-<!--
 ### GitHub Actions
 
-On commits or pull requests to the `main` branch, the GitHub Actions will run, performing linting, unit tests, and build tests.
+On commits or pull requests to the `main` branch, the `test.yml` workflow will run, performing linting and testing.
 
--->
+When pull requests are merged to the `main` branch, if the PR had a `release` label, the `publish` job will make sure it's been tested, then publish it to GitHub Packages.  If the PR didn't have a `release` label, and it didn't have a `nobump` label, the `make_prs` job will make a PR (with a `release` label) that bumps the version.
 
 ### Updating dependencies
 
@@ -141,9 +140,6 @@ On commits or pull requests to the `main` branch, the GitHub Actions will run, p
 
 -->
 
-#
-[ci-badge]: https://github.com/adamwolf/markdown-it-section-headers/workflows/CI/badge.svg
-[ci-link]: https://github.com/adamwolf/markdown-it-section-headers/actions
 [npm-badge]: https://img.shields.io/npm/v/markdown-it-section-headers.svg
 [npm-link]: https://www.npmjs.com/package/markdown-it-section-headers
 
@@ -151,10 +147,7 @@ On commits or pull requests to the `main` branch, the GitHub Actions will run, p
 [GitHub Pages]: https://docs.github.com/en/pages
 [npm]: https://www.npmjs.com
 [unpkg]: https://unpkg.com/
-
 [markdown-it]: https://github.com/markdown-it/markdown-it
 [Tufte CSS]: https://edwardtufte.github.io/tufte-css/
 [markdown-it-header-sections]: https://github.com/arve0/markdown-it-header-sections
-[tufte-pandoc-css]: https://github.com/jez/tufte-pandoc-css
-[tufte-markdown]: https://github.com/duzyn/tufte-markdown
 [Eleventy]: https://www.11ty.dev/
