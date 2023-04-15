@@ -1,8 +1,4 @@
-
-# Make sure to enable "Allow GitHub Actions to create and approve pull requests" in the repository settings
-# Use a PAT if you want GitHub Actions to run on the created PR, see https://github.com/peter-evans/create-pull-request/issues/48
-
-name: 'Make PRs to bump prepatch version'
+name: 'Handle PRs merged into main'
 on:
   pull_request:
     branches:
@@ -11,7 +7,7 @@ on:
       - closed
 jobs:
   make_prs:
-    name: 'Bump version'
+    name: 'Make PR that bumps version'
     if: github.event.pull_request.merged == true && (!contains(github.event.pull_request.labels.*.name, 'nobump') && !contains(github.event.pull_request.labels.*.name, 'release'))
     runs-on: ubuntu-latest
     permissions:
@@ -39,4 +35,30 @@ jobs:
       - name: Make PR
         run: gh pr create --title "Bump version to $NEWVERSION" --body 'Autocreated by GitHub Actions' --label 'release'
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_FOR_MAKING_PRS }}
+  lint-and-test:
+    uses: ./.github/workflows/test.yml
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
+  publish:
+    name: 'Publish to GitHub Packages'
+    needs: lint-and-test
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm ci
+      - name: Set up npm to publish to GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" > .npmrc
+          echo "@adamwolf:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "always-auth=true" >> .npmrc
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
