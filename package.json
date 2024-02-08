@@ -1,6 +1,6 @@
 {
   "name": "@adamwolf/markdown-it-section-headers",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A markdown-it plugin to add sections using headers",
   "author": "Adam Wolf",
   "homepage": "https://github.com/adamwolf/markdown-it-section-headers",
